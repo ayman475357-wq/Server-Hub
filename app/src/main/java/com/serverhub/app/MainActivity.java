@@ -1,6 +1,7 @@
 package com.serverhub.app;
 
 import android.app.Activity;
+<<<<<<< HEAD
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -197,4 +198,47 @@ public class MainActivity extends Activity {
         }
         super.onDestroy();
     }
+=======
+import android.os.Bundle;
+import android.widget.*;
+import java.net.*;
+
+public class MainActivity extends Activity {
+    EditText url, user, pass;
+    TextView status;
+
+    public void onCreate(Bundle b) {
+        super.onCreate(b);
+        setContentView(R.layout.activity_main);
+        url=findViewById(R.id.url);
+        user=findViewById(R.id.user);
+        pass=findViewById(R.id.pass);
+        status=findViewById(R.id.status);
+
+        findViewById(R.id.login).setOnClickListener(v -> login());
+        findViewById(R.id.signup).setOnClickListener(v ->
+            status.setText("واجهة إنشاء الحساب جاهزة للربط مع API السيرفر"));
+    }
+
+    void login() {
+        status.setText("جارٍ الاتصال...");
+        new Thread(() -> {
+            try {
+                URL u=new URL(url.getText().toString().trim()+"/login");
+                HttpURLConnection c=(HttpURLConnection)u.openConnection();
+                c.setRequestMethod("POST");
+                c.setDoOutput(true);
+                c.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                String x="username="+URLEncoder.encode(user.getText().toString(),"UTF-8")
+                    +"&password="+URLEncoder.encode(pass.getText().toString(),"UTF-8");
+                c.getOutputStream().write(x.getBytes("UTF-8"));
+                int code=c.getResponseCode();
+                runOnUiThread(() -> status.setText(
+                    code>=200 && code<400 ? "تم الاتصال بالسيرفر" : "فشل الدخول: "+code));
+            } catch(Exception e) {
+                runOnUiThread(() -> status.setText("تعذر الاتصال: "+e.getMessage()));
+            }
+        }).start();
+    }
+>>>>>>> 96895eb (Server Hub Android new project)
 }
